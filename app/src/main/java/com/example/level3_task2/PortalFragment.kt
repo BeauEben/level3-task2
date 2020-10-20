@@ -1,5 +1,6 @@
 package com.example.level3_task2
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.net.toUri
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -18,8 +21,8 @@ import kotlinx.android.synthetic.main.fragment_portal.*
 class PortalFragment : Fragment() {
 
     private val portals = arrayListOf<Portal>()
-    private val portalAdapter = PortalAdapter(portals)
-
+    private val portalAdapter = PortalAdapter(portals) { portal: Portal -> portalClicked(portal) }
+    private var url = "test.com"
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -39,7 +42,6 @@ class PortalFragment : Fragment() {
     private fun initViews(){
         rvPortals.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         rvPortals.adapter = portalAdapter
-
         observeAddPortalResult()
     }
 
@@ -50,5 +52,12 @@ class PortalFragment : Fragment() {
                 portals.add(it)
             }
         }
+    }
+
+    private fun portalClicked(portal: Portal){
+        val builder = CustomTabsIntent.Builder()
+        val customTabsIntent = builder.build()
+
+        customTabsIntent.launchUrl(activity, Uri.parse(portal.urlText))
     }
 }
